@@ -4,22 +4,21 @@ TABLE_NAME = 'VISITORS'
 
 #Get all visitors
 def get_all_visitors(page=1, page_size=50, sort_by="full_name", order="ASC"):
-
     offset = (page - 1) * page_size
-    order_by = f"{sort_by} {order}"
 
-    return select(
-        table=TABLE_NAME,
-        order_by=order_by,
-        limit=page_size,
-        offset=offset,
+    return (
+        select(TABLE_NAME)
+        .order_by(sort_by, order)
+        .offset(offset)
+        .limit(page_size)
+        .execute()
     )
 
 def get_visitor_by_id(visitor_id):
-    return select(
-        table=TABLE_NAME,
-        where={'visitor_id': visitor_id},
-        fetch_one=True
+    return (
+        select(TABLE_NAME)
+        .where("visitor_id = %s", [visitor_id])
+        .execute(fetch_one=True)
     )
 
 def create_visitor(data):

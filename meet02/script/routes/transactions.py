@@ -13,7 +13,12 @@ transactions_bp = Blueprint('transactions', __name__)
 @transactions_bp.route('/', methods=['GET'], endpoint='get_transactions')
 @require_api_key
 def get_transactions():
-    transactions = get_all_transactions()
+    page = request.args.get('page', 1, type=int)
+    page_size = request.args.get('page_size', 50, type=int)
+    sort_by = request.args.get('sort_by', 'transaction_date', type=str)
+    order = request.args.get('order', 'DESC', type=str)
+
+    transactions = get_all_transactions(page, page_size, sort_by, order)
     return jsonify(transactions)
 
 @transactions_bp.route('/<int:id>', methods=['GET'], endpoint='get_transaction')

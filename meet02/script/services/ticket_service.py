@@ -5,20 +5,20 @@ TABLE_NAME = 'TICKETS'
 def get_all_tickets(page=1, page_size=50, sort_by="purchase_date", order="DESC"):
 
     offset = (page - 1) * page_size
-    order_by = f"{sort_by} {order}"
 
-    return select(
-        table=TABLE_NAME,
-        order_by=order_by,
-        limit=page_size,
-        offset=offset
+    return (
+        select(TABLE_NAME)
+        .order_by(sort_by, order)
+        .offset(offset)
+        .limit(page_size)
+        .execute()
     )
 
 def get_ticket_by_id(ticket_id):
-    return select(
-        table=TABLE_NAME,
-        where={'ticket_id': ticket_id},
-        fetch_one=True
+    return (
+        select(TABLE_NAME)
+        .where("ticket_id = %s", [ticket_id])
+        .execute(fetch_one=True)
     )
 
 def create_ticket(data):

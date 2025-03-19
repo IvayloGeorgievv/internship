@@ -14,7 +14,12 @@ tickets_bp = Blueprint('tickets', __name__)
 @tickets_bp.route('/', methods=['GET'], endpoint='get_tickets')
 @require_api_key
 def get_tickets():
-    tickets = get_all_tickets()
+    page = request.args.get('page', 1, type=int)
+    page_size = request.args.get('page_size', 50, type=int)
+    sort_by = request.args.get('sort_by', 'purchase_date', type=str)
+    order = request.args.get('order', 'DESC', type=str)
+
+    tickets = get_all_tickets(page, page_size, sort_by, order)
     return jsonify(tickets)
 
 #Get Ticket by id

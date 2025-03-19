@@ -13,7 +13,12 @@ promotions_bp = Blueprint('promotions', __name__)
 @promotions_bp.route('/', methods=['GET'], endpoint='get_promotions')
 @require_api_key
 def get_promotions():
-    promotions = get_all_promotions()
+    page = request.args.get('page', 1, type=int)
+    page_size = request.args.get('page_size', 10, type=int)
+    sort_by = request.args.get('sort_by', 'start_date', type=str)
+    order = request.args.get('order', 'ASC', type=str)
+
+    promotions = get_all_promotions(page, page_size, sort_by, order)
     return jsonify(promotions)
 
 @promotions_bp.route('/<int:id>', methods=['GET'], endpoint='get_promotion')

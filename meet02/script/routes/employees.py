@@ -13,7 +13,12 @@ employees_bp = Blueprint('employees', __name__)
 @employees_bp.route('/', methods=['GET'], endpoint='get_employees')
 @require_api_key
 def get_employees():
-    employees = get_all_employees()
+    page = request.args.get('page', 1, type=int)
+    page_size = request.args.get('page_size', 50, type=int)
+    sort_by = request.args.get('sort_by', 'name', type=str)
+    order = request.args.get('order', 'ASC', type=str)
+
+    employees = get_all_employees(page, page_size, sort_by, order)
     return jsonify(employees)
 
 @employees_bp.route('/<int:id>', methods=['GET'], endpoint='get_employee')

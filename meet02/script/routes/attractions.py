@@ -13,7 +13,12 @@ attractions_bp = Blueprint('attractions', __name__)
 @attractions_bp.route('/', methods=['GET'], endpoint='get_attractions')
 @require_api_key
 def get_attractions():
-    attractions = get_all_attractions()
+    page = request.args.get('page', 1, type=int)
+    page_size = request.args.get('page_size', 50, type=int)
+    sort_by = request.args.get('sort_by', 'name', type=str)
+    order = request.args.get('order', 'DESC', type=str)
+
+    attractions = get_all_attractions(page, page_size, sort_by, order)
     return jsonify(attractions)
 
 @attractions_bp.route('/<int:id>', methods=['GET'], endpoint='get_attraction')

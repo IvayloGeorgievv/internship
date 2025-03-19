@@ -5,23 +5,22 @@ TABLE_NAME = 'EMPLOYEES'
 
 def get_all_employees(page=1, page_size=50, sort_by="full_name", order="ASC"):
     offset = (page - 1) * page_size
-    order_by = f"{sort_by} {order}"
 
-    return select(
-        TABLE_NAME,
-        order_by=order_by,
-        limit=page_size,
-        offset=offset
+    return (
+        select(TABLE_NAME)
+        .order_by(sort_by, order)
+        .limit(page_size)
+        .offset(offset)
+        .execute()
     )
 
 
 def get_employee_by_id(employee_id):
-    return select(
-        TABLE_NAME,
-        where={'employee_id': employee_id},
-        fetch_one=True
+    return (
+        select(TABLE_NAME)
+        .where("employee_id = %s", [employee_id])
+        .execute(fetch_one=True)
     )
-
 
 def create_employee(data):
     if not validate_employee(data):

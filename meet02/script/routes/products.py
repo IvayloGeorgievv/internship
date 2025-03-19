@@ -13,6 +13,12 @@ products_bp = Blueprint('products', __name__)
 @products_bp.route('/', methods=['GET'], endpoint='get_products')
 @require_api_key
 def get_products():
+    page = request.args.get('page', 1, type=int)
+    page_size = request.args.get('page_size', 20, type=int)
+    sort_by = request.args.get('sort_by', 'name', type=str)
+    order = request.args.get('order', 'ASC', type=str)
+
+
     products = get_all_products()
     return jsonify(products)
 

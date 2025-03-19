@@ -14,7 +14,12 @@ visitors_bp = Blueprint('visitors', __name__)
 @visitors_bp.route('/', methods=['GET'], endpoint='get_visitors')
 @require_api_key
 def get_visitors():
-    visitors = get_all_visitors()
+    page = request.args.get('page', 1, type=int)
+    page_size = request.args.get('page_size', 50, type=int)
+    sort_by = request.args.get('sort_by', 'full_name', type=str)
+    order = request.args.get('order', 'ASC', type=str)
+
+    visitors = get_all_visitors(page, page_size, sort_by, order)
     return jsonify(visitors)
 
 #Get Visitor by id

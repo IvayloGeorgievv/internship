@@ -4,12 +4,21 @@ TABLE_NAME = 'ESTABLISHMENTS'
 
 def get_all_establishments(page=1, page_size=50, sort_by="name", order="ASC"):
     offset = (page - 1) * page_size
-    order_by = f"{sort_by} {order}"
 
-    return select(TABLE_NAME, order_by=order_by, limit=page_size, offset=offset)
+    return (
+        select(TABLE_NAME)
+        .order_by(sort_by, order)
+        .limit(page_size)
+        .offset(offset)
+        .execute()
+    )
 
 def get_establishment_by_id(establishment_id):
-    return select(TABLE_NAME, where={'establishment_id': establishment_id}, fetch_one=True)
+    return (
+        select(TABLE_NAME)
+        .where("establishment_id = %s", [establishment_id])
+        .execute(fetch_one=True)
+    )
 
 def create_establishment(data):
     if not validate_establishment(data):

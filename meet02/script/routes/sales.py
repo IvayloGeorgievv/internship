@@ -13,7 +13,12 @@ sales_bp = Blueprint('sales', __name__)
 @sales_bp.route('/', methods=['GET'], endpoint='get_sales')
 @require_api_key
 def get_sales():
-    sales = get_all_sales()
+    page = request.args.get('page', 1, type=int)
+    page_size = request.args.get('page_size', 10, type=int)
+    sort_by = request.args.get('sort_by', 'sale_date', type=str)
+    order = request.args.get('order', 'DESC', type=str)
+
+    sales = get_all_sales(page, page_size, sort_by, order)
     return jsonify(sales)
 
 @sales_bp.route('/<int:id>', methods=['GET'], endpoint='get_sale')

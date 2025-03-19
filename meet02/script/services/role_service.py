@@ -6,7 +6,11 @@ def get_all_roles():
     return select(TABLE_NAME)
 
 def get_role_by_id(role_id):
-    return select(TABLE_NAME, where={'role_id': role_id}, fetch_one=True)
+    return (
+        select(TABLE_NAME)
+        .where("role_id = %s", [role_id])
+        .execute(fetch_one=True)
+    )
 
 def create_role(data):
     result = insert(TABLE_NAME, data)

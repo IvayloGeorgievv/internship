@@ -13,7 +13,12 @@ establishments_bp = Blueprint('establishments', __name__)
 @establishments_bp.route('/', methods=['GET'], endpoint='get_establishments')
 @require_api_key
 def get_establishments():
-    establishments = get_all_establishments()
+    page = request.args.get('page', 1, type=int)
+    page_size = request.args.get('page_size', 50, type=int)
+    sort_by = request.args.get('sort_by', 'name', type=str)
+    order = request.args.get('order', 'ASC', type=str)
+
+    establishments = get_all_establishments(page, page_size, sort_by, order)
     return jsonify(establishments)
 
 @establishments_bp.route('/<int:id>', methods=['GET'], endpoint='get_establishment')

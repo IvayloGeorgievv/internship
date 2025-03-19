@@ -2,11 +2,22 @@ from query_builder import select, insert, update, delete
 
 TABLE_NAME = 'PROMOTIONS'
 
-def get_all_promotions():
-    return select(TABLE_NAME)
+def get_all_promotions(page=1, page_size=50, sort_by="start_date", order="ASC"):
+    offset = (page - 1) * page_size
+    return (
+        select(TABLE_NAME)
+        .order_by(sort_by, order)
+        .limit(page_size)
+        .offset(offset)
+        .execute()
+    )
 
 def get_promotion_by_id(promotion_id):
-    return select(TABLE_NAME, where={'promotion_id': promotion_id}, fetch_one=True)
+    return (
+        select(TABLE_NAME)
+        .where("promotion_id = %s", [promotion_id])
+        .execute(fetch_one=True)
+    )
 
 def create_promotion(data):
     result = insert(TABLE_NAME, data)

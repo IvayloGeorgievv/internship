@@ -2,11 +2,23 @@ from query_builder import select, insert, update, delete
 
 TABLE_NAME = 'SALES'
 
-def get_all_sales():
-    return select(TABLE_NAME)
+def get_all_sales(page=1, page_size=50, sort_by="sale_date", order="DESC"):
+    offset = (page - 1) * page_size
+
+    return (
+        select(TABLE_NAME)
+        .order_by(sort_by, order)
+        .limit(page_size)
+        .offset(offset)
+        .execute()
+    )
 
 def get_sale_by_id(sale_id):
-    return select(TABLE_NAME, where={'sale_id': sale_id}, fetch_one=True)
+    return (
+        select(TABLE_NAME)
+        .where("sale_id = %s", [sale_id])
+        .execute(fetch_one=True)
+    )
 
 def create_sale(data):
     # First, insert into SALES table

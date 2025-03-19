@@ -3,22 +3,20 @@ from query_builder import select, insert, update, delete
 TABLE_NAME = 'ATTRACTIONS'
 
 def get_all_attractions(page=1, page_size=50, sort_by="name", order="DESC"):
-
     offset = (page - 1) * page_size
-    order_by = f"{sort_by} {order}"
-
-    return select(
-        TABLE_NAME,
-        order_by=order_by,
-        limit=page_size,
-        offset=offset,
+    return (
+        select(TABLE_NAME)
+        .order_by(sort_by, order)
+        .limit(page_size)
+        .offset(offset)
+        .execute()
     )
 
 def get_attraction_by_id(attr_id):
-    return select(
-        TABLE_NAME,
-        where={'attraction_id': attr_id},
-        fetch_one=True
+    return (
+        select(TABLE_NAME)
+        .where("attraction_id = %s", [attr_id])
+        .execute(fetch_one=True)
     )
 
 def create_attraction(data):
@@ -36,7 +34,6 @@ def update_attraction(attr_id, data):
     return result > 0
 
 def delete_attraction(attr_id):
-
     result = delete(TABLE_NAME, {'attraction_id': attr_id})
     return result > 0
 
