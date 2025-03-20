@@ -13,6 +13,7 @@ visitors_bp = Blueprint('visitors', __name__)
 #Get All Visitors
 @visitors_bp.route('/', methods=['GET'], endpoint='get_visitors')
 @require_api_key
+# Not going to add filters to visitors because records in real world would be uniq we cannot filter them
 def get_visitors():
     page = request.args.get('page', 1, type=int)
     page_size = request.args.get('page_size', 50, type=int)

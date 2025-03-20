@@ -2,17 +2,22 @@ from query_builder import select, insert, update, delete
 
 TABLE_NAME = 'TICKETS'
 
-def get_all_tickets(page=1, page_size=50, sort_by="purchase_date", order="DESC"):
+def get_all_tickets(page=1, page_size=50, sort_by="purchase_date", order="DESC", filters=None):
 
-    offset = (page - 1) * page_size
+    qb = select(TABLE_NAME).select("*")
 
-    return (
-        select(TABLE_NAME)
-        .order_by(sort_by, order)
-        .offset(offset)
-        .limit(page_size)
-        .execute()
-    )
+    if filters:
+        for key, values in filters.items():
+            if isinstance(values, list) and len(values) > 1:
+                qb.where(f"{key} = %s", [values[0]])
+                for v in values[1:]:
+                    qb.where(f"{key} = %s", [v])
+                continue
+
+            qb.where(f"{key} = %s", [values])
+
+    offset_value = (page - 1) * page_size
+    return qb.orderBy(sort_by, order).limit(page_size).offset(offset_value).execute()
 
 def get_ticket_by_id(ticket_id):
     return (

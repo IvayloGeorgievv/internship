@@ -37,7 +37,7 @@ class QueryBuilder:
 
         if params:
             for param in params:
-                self.params.append(params)
+                self.params.append(param)
 
         return self
 
@@ -71,10 +71,29 @@ class QueryBuilder:
             cursor.execute(self.query, tuple(self.params))
 
             if self.query.strip().lower().startswith("select"):
-                if fetch_one:
-                    return cursor.fetchone()
 
-                return cursor.fetchone()
+                #Get columns names for key-value pair json format
+                columns = []
+                for desc in cursor.description:
+                    columns.append(desc[0])
+
+                if fetch_one:
+                    row = cursor.fetchone()
+                    if row is None:
+                        return None
+                    row_dict = {}
+                    for i in range(len(columns)):
+                        row_dict[columns[i]] = row[i]
+                    return row_dict
+
+                rows = cursor.fetchall()
+                results = []
+                for row in rows:
+                    row_dict = {}
+                    for i in range(len(columns)):
+                        row_dict[columns[i]] = row[i]
+                    results.append(row_dict)
+                return results
 
             connection.commit()
             return cursor.rowcount

@@ -18,7 +18,13 @@ def get_attractions():
     sort_by = request.args.get('sort_by', 'name', type=str)
     order = request.args.get('order', 'DESC', type=str)
 
-    attractions = get_all_attractions(page, page_size, sort_by, order)
+    # Getting filters as key-value pairs
+    filters = {}
+    for key in request.args:
+        if key not in ['page', 'page_size', 'sort_by', 'order']:
+            filters[key] = request.args.getlist(key)
+
+    attractions = get_all_attractions(page, page_size, sort_by, order, filters)
     return jsonify(attractions)
 
 @attractions_bp.route('/<int:id>', methods=['GET'], endpoint='get_attraction')

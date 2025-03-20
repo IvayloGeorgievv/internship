@@ -18,7 +18,12 @@ def get_sales():
     sort_by = request.args.get('sort_by', 'sale_date', type=str)
     order = request.args.get('order', 'DESC', type=str)
 
-    sales = get_all_sales(page, page_size, sort_by, order)
+    filters = {}
+    for key in request.args:
+        if key not in ['page', 'page_size', 'sort_by', 'order']:
+            filters[key] = request.args.getlist(key)
+
+    sales = get_all_sales(page, page_size, sort_by, order, filters)
     return jsonify(sales)
 
 @sales_bp.route('/<int:id>', methods=['GET'], endpoint='get_sale')

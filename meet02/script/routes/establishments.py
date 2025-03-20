@@ -18,7 +18,12 @@ def get_establishments():
     sort_by = request.args.get('sort_by', 'name', type=str)
     order = request.args.get('order', 'ASC', type=str)
 
-    establishments = get_all_establishments(page, page_size, sort_by, order)
+    filters = {}
+    for key in request.args:
+        if key not in ['page', 'page_size', 'sort_by', 'order']:
+            filters[key] = request.args.getlist(key)
+
+    establishments = get_all_establishments(page, page_size, sort_by, order, filters)
     return jsonify(establishments)
 
 @establishments_bp.route('/<int:id>', methods=['GET'], endpoint='get_establishment')

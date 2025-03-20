@@ -1,3 +1,5 @@
+import atexit
+
 from flask import Flask
 
 from db import SnowflakeConnection
@@ -25,7 +27,7 @@ app.register_blueprint(sales_bp, url_prefix='/sales')
 app.register_blueprint(transactions_bp, url_prefix='/financial')
 
 # This func will close the Snowflake connection only when the app shutdowns
-@app.teardown_appcontext
+@atexit.register
 def shutdown_connection(exception=None):
     if SnowflakeConnection._instance is not None:
         SnowflakeConnection._instance.close_connection()

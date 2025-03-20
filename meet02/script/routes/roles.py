@@ -12,6 +12,7 @@ roles_bp = Blueprint('roles', __name__)
 
 @roles_bp.route('/', methods=['GET'], endpoint='get_roles')
 @require_api_key
+# Not adding filters to roles because at the moment there are 5 roles
 def get_roles():
     roles = get_all_roles()
     return jsonify(roles)

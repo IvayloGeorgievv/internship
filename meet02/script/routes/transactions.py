@@ -18,7 +18,12 @@ def get_transactions():
     sort_by = request.args.get('sort_by', 'transaction_date', type=str)
     order = request.args.get('order', 'DESC', type=str)
 
-    transactions = get_all_transactions(page, page_size, sort_by, order)
+    filters = {}
+    for key in request.args:
+        if key not in ['page', 'page_size', 'sort_by', 'order']:
+            filters[key] = request.args.getlist(key)
+
+    transactions = get_all_transactions(page, page_size, sort_by, order, filters)
     return jsonify(transactions)
 
 @transactions_bp.route('/<int:id>', methods=['GET'], endpoint='get_transaction')

@@ -2,15 +2,26 @@ from query_builder import select, insert, update, delete
 
 TABLE_NAME = 'ATTRACTIONS'
 
-def get_all_attractions(page=1, page_size=50, sort_by="name", order="DESC"):
-    offset = (page - 1) * page_size
-    return (
-        select(TABLE_NAME)
-        .order_by(sort_by, order)
-        .limit(page_size)
-        .offset(offset)
-        .execute()
-    )
+def get_all_attractions(page=1, page_size=50, sort_by="name", order="DESC", filters=None):
+
+    # Storing select part in qb variable so we can add filtering logic by concatenating to the variable
+    qb = select(TABLE_NAME).select("*")
+
+    if filters:
+        for key, values in filters.items():
+           # Checking if we have more than 1 filter to filter by and if we have more than one value for an attribute
+           # example -> ?status=Operational&status=Maintenance
+            if isinstance(values, list) and len(values) > 1:
+                qb.where(f"{key} = %s", [values[0]])
+                for v in values[1:]:
+                    qb.orWhere(f"{key} = %s", [v])
+                # Using continue to skip the logic for having only 1 filter
+                continue
+
+            qb.where(f"{key} = %s", [values[0]])
+
+    offset_value = (page - 1) * page_size
+    return qb.orderBy(sort_by, order).limit(page_size).offset(offset_value).execute()
 
 def get_attraction_by_id(attr_id):
     return (

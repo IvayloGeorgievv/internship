@@ -2,16 +2,22 @@ from query_builder import select, insert, update, delete
 
 TABLE_NAME = 'ESTABLISHMENTS'
 
-def get_all_establishments(page=1, page_size=50, sort_by="name", order="ASC"):
-    offset = (page - 1) * page_size
+def get_all_establishments(page=1, page_size=50, sort_by="name", order="ASC", filters=None):
 
-    return (
-        select(TABLE_NAME)
-        .order_by(sort_by, order)
-        .limit(page_size)
-        .offset(offset)
-        .execute()
-    )
+    qb = select(TABLE_NAME).select("*")
+
+    if filters:
+        for key, values in filters.items():
+            if isinstance(values, list) and len(values) > 1:
+                qb.where(f"{key} = %s", [values[0]])
+                for v in values[1:]:
+                    qb.orWhere(f"{key} = %s", [v])
+                continue
+
+            qb.where(f"{key} = %s", [values[0]])
+
+    offset_value = (page - 1) * page_size
+    return qb.orderBy(sort_by, order).limit(page_size).offset(offset_value).execute()
 
 def get_establishment_by_id(establishment_id):
     return (

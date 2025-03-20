@@ -18,8 +18,12 @@ def get_products():
     sort_by = request.args.get('sort_by', 'name', type=str)
     order = request.args.get('order', 'ASC', type=str)
 
+    filters = {}
+    for key in request.args:
+        if key not in ['page', 'page_size', 'sort_by', 'order']:
+            filters[key] = request.args.getlist(key)
 
-    products = get_all_products()
+    products = get_all_products(page, page_size, sort_by, order, filters)
     return jsonify(products)
 
 @products_bp.route('/<int:id>', methods=['GET'], endpoint='get_product')

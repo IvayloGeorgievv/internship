@@ -19,7 +19,12 @@ def get_tickets():
     sort_by = request.args.get('sort_by', 'purchase_date', type=str)
     order = request.args.get('order', 'DESC', type=str)
 
-    tickets = get_all_tickets(page, page_size, sort_by, order)
+    filters = {}
+    for key in request.args:
+        if key not in ['page', 'page_size', 'sort_by', 'order']:
+            filters[key] = request.args.getlist(key)
+
+    tickets = get_all_tickets(page, page_size, sort_by, order, filters)
     return jsonify(tickets)
 
 #Get Ticket by id

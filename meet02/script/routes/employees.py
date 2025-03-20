@@ -15,10 +15,15 @@ employees_bp = Blueprint('employees', __name__)
 def get_employees():
     page = request.args.get('page', 1, type=int)
     page_size = request.args.get('page_size', 50, type=int)
-    sort_by = request.args.get('sort_by', 'name', type=str)
+    sort_by = request.args.get('sort_by', 'full_name', type=str)
     order = request.args.get('order', 'ASC', type=str)
 
-    employees = get_all_employees(page, page_size, sort_by, order)
+    filters = {}
+    for key in request.args:
+        if key not in ['page', 'page_size', 'sort_by', 'order']:
+            filters[key] = request.args.getlist(key)
+
+    employees = get_all_employees(page, page_size, sort_by, order, filters)
     return jsonify(employees)
 
 @employees_bp.route('/<int:id>', methods=['GET'], endpoint='get_employee')
